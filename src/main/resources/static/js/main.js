@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var usernamePage = document.querySelector("#username-page");
 var chatPage = document.querySelector("#chat-page");
@@ -11,17 +11,17 @@ var connectingElement = document.querySelector('.connecting');
 var stompClient = null;
 var username = null;
 
-var colors string[] = ['#2196F3', '#32c787', '#00BCD4', '#ff5652',
-                           '#ffc107', '#ff85af', '#FF9800', '#39bbb0'];
+var colors = ['#2196F3', '#32c787', '#00BCD4', '#ff5652', '#ffc107', '#ff85af', '#FF9800', '#39bbb0'];
 
-function connect() {
+function connect(event) {
     username = document.querySelector("#name").value.trim();
-    if (username) {
-        usernamePage.classList.add("hidden");
-        chatPage.classList.remove("hidden");
 
-        var socket = new SocketJs("/ws");
-        stompClient = Stop.over(socket);
+    if (username) {
+        usernamePage.classList.add('hidden');
+        chatPage.classList.remove('hidden');
+
+        var socket = new SockJs('/ws');
+        stompClient = Stomp.over(socket);
 
         stompClient.connect({}, onConnected, onError);
     }
@@ -37,17 +37,36 @@ function onConnected(){
     // tell username to the server
     stompClient.send("/app/chat.addUser",
     {},
-    JSON.stringify({sender: username, type: "JOIN"}));
+    JSON.stringify({sender: username, type: "JOIN"}))
 
     connectingElement.classList.add("hidden");
 }
 
-function onError() {
+function onError(error) {
     connectingElement.textContent =
-    "Could not connect WebSocket server. Please refresh this page and try again";
+    "Could not connect WebSocket server. Please refresh this page and try again!";
 
     connectingElement.style.color = "red";
 
+}
+
+function sendMessage(event){
+
+    var messageContent = messageInput.value.trim();
+    if (messageContent && stompClient){
+        var chatMessage = {
+            sender: username,
+            content: messageInput.value,
+            type: "CHAT"
+        };
+        stompClient.send(
+            '/app/chat.sendMessage',
+            {},
+            JSON.stringify(chatMessage)
+        );
+        messageInput.value = "";
+    }
+    event.preventDefault();
 }
 
 function  onMessageReceived(payload) {
@@ -85,25 +104,6 @@ function  onMessageReceived(payload) {
 
         messageArea.appendChild(messageElement);
         messageArea.scrollTop = messageArea.scrollHeight;
-}
-
-function sendMessage(){
-
-    var messageContent = messageInput.value.trim();
-    if (messageContent && stompClient){
-        var chatMessage = {
-            sender: username,
-            content: messageContent,
-            type: "CHAT"
-        };
-        stompClient.send(
-            '/app/chat.sendMessage',
-            {},
-            JSON.stringify(chatMessage)
-        );
-        messageInput.content = "";
-    }
-    event.preventDefault();
 }
 
 function getAvatarColor(messageSender) {
