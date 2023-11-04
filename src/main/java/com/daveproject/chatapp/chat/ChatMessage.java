@@ -1,4 +1,4 @@
-package com.daveproject.chatapp.controller;
+package com.daveproject.chatapp.chat;
 
 import lombok.*;
 
