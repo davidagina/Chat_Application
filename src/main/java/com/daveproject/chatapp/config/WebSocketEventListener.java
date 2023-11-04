@@ -1,7 +1,7 @@
 package com.daveproject.chatapp.config;
 
-import com.daveproject.chatapp.controller.ChatMessage;
-import com.daveproject.chatapp.controller.MessageType;
+import com.daveproject.chatapp.chat.ChatMessage;
+import com.daveproject.chatapp.chat.MessageType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -24,7 +24,7 @@ public class WebSocketEventListener {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         if (username != null){
-            log.info("User disconnected: {}", username);
+            log.info("user disconnected: {}", username);
             var chatMessage = ChatMessage.builder()
                     .type(MessageType.LEAVE)
                     .sender(username)
